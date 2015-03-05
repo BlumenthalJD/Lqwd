@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>config/command_map.lqwd</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,40 @@
+#
+#
+#	Created By: Josh Bosley
+#
+#	This file is for the mapping of commands across operating systems		
+#	First field is the command you want to use in the terminal, 
+#	the second is what that will map to on windows, and the third is for nix
+#	Setting a field with a * will tell Lqwd to use the previous fields entry,
+#	if the previous field is also a *, or a ! it will use the first entry
+#
+#	Use ! to signal no command listed.
+#
+#	Any incomplete field will be ignored 
+#
+#	Any unknown command will not be executed.
+#
+#	command:windows:*nix,argument:win argument map:nix argument map
+
+
+cd:*:*
+
+make:*:*
+
+exit:*:*
+
+host:hostname:*
+
+ls:dir:ls,-la:!:*,-l:!:*,-A:!:*
+
+ip:ipconfig:ifconfig
+
+c:cls:clear
+
+rm:del:rm,-rf:/F /S /Q:-rf
+
+ping:*:*
+
+uptime:!:*
+
+

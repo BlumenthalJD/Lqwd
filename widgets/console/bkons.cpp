@@ -30,11 +30,10 @@ Bkons::Bkons(QWidget *parent)
 void Bkons::beginSession()
 {
     active = true;
-    lqwdText = "@lqwd> :";
+    lqwdText = "@lqwd>  ";
     currentActivity = "core";
-    appendPlainText(currentActivity + "@lqwd> :");
+    appendPlainText(currentActivity + lqwdText);
     setEnabled(true);
-
 }
 
 void Bkons::puts(QString data)
@@ -83,7 +82,7 @@ void Bkons::keyPressEvent(QKeyEvent *e)
                 REMEMBER THE SPOT OF LAST VIEWED. RESET IT WHEN USER PRESSES ENTER
 
           */
-
+        qDebug() << " NEED TO PROGRAM ARROW FEATURES ";
         /*
         setFocus();
         for(int i = 0; i < buffer.length(); i++)
@@ -104,11 +103,15 @@ void Bkons::keyPressEvent(QKeyEvent *e)
         break;
     case Qt::Key_Return:
     case Qt::Key_Enter:
-        if( buffer != "")
+    {
+        if( !buffer.trimmed().isEmpty())
+        {
             history.append(buffer);
             emit dataReady(buffer);
             buffer = "";
+        }
         break;
+    }
 
     default:
         addKeyToBuffer(e->text());

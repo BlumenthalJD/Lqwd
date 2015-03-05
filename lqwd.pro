@@ -21,6 +21,14 @@ SOURCES += main.cpp\
 HEADERS  += hq.h \
     widgets/console/bkons.h \
     lib/engine.h \
-    lib/errormachine.h
+    lib/errormachine.h \
+    lib/commandStructure.h \
+    lib/defines.h
 
 FORMS    += hq.ui
+
+RESOURCES += \
+    config.qrc \
+    icons/icons.qrc
+
+OTHER_FILES +=

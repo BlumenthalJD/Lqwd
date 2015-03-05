@@ -2,6 +2,7 @@
 #define ERRORMACHINE_H
 
 #include <QObject>
+#include "defines.h"
 
 class ErrorMachine : public QObject
 {
