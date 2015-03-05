@@ -14,9 +14,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         hq.cpp \
-    widgets/console/bkons.cpp
+    widgets/console/bkons.cpp \
+    lib/engine.cpp \
+    lib/errormachine.cpp
 
 HEADERS  += hq.h \
-    widgets/console/bkons.h
+    widgets/console/bkons.h \
+    lib/engine.h \
+    lib/errormachine.h
 
 FORMS    += hq.ui

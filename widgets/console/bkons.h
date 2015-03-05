@@ -7,22 +7,25 @@
 #ifndef CONSOLE_BKONS
 #define CONSOLE_BKONS
 
+#include "lib/engine.h"
 #include <QPlainTextEdit>
-
 
 class Bkons : public QPlainTextEdit
 {
     Q_OBJECT
 
 signals:
-    void retData(const QByteArray &data);
+    void dataReady(QString data);
 
 public:
     explicit Bkons(QWidget *parent = 0);
 
     void beginSession();
-    void handleUserInput(QString);
     void puts(QString);
+
+public slots:
+
+    void responseOut(QString);
 
 protected:
     virtual void keyPressEvent(QKeyEvent *e);
@@ -31,21 +34,22 @@ protected:
     virtual void contextMenuEvent(QContextMenuEvent *e);
 
 private:
-    int currentLine;
+
+    // For handling commands
+    Engine engine;
+
+    // State, and display
     bool active;
-    QString lqwdText,currentActivity;
+    int hIndex;
+    QString lqwdText,
+    currentActivity;
 
     // Input Controls
     QString buffer;
-    QStringList history;
     int maxHistory;
+    QStringList history;
 
     void addKeyToBuffer(QString key);
-    void initiateCommand();
-
-
-
-
 };
 
 #endif // CONSOLE_H
