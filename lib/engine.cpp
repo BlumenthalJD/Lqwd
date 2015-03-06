@@ -12,7 +12,7 @@ Engine::Engine(QObject *parent) :
 
 
 
-    errM.catchError(" TO DO : \n Program : Engine::doCommand()  , Console arrow / history functionality\n\n Also : Check out command ls -la - Something is wrong");
+    errM.catchError(" TO DO : \n Program : Engine::doCommand()  , Console arrow / history functionality\n\n ");
 
 }
 
@@ -116,7 +116,7 @@ void Engine::processCommand(QString cmd)
 {
 
     // Translate the filtered input to the mapped command and args
-   QString command = cmdData.retrieveCommand(commandFilter(cmd));
+   QString command = cmdData.translateCommand(commandFilter(cmd));
 
     if( command == REF_UNDEFINED )
     {
