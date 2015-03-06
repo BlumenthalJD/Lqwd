@@ -6,7 +6,7 @@
 #include <QProcess>
 #include "defines.h"
 #include "errormachine.h"
-#include "commandStructure.h"
+#include "commandnexus.h"
 
 class Engine : public QObject
 {
@@ -25,7 +25,8 @@ private:
 
     unsigned osIndex;
     ErrorMachine errM;
-    _cmdStruct cmdData;
+   // _cmdStruct cmdData;
+    CommandNexus cmdNexus;
 
     void loadCommandMap();
     void insertIntoMap(QString);

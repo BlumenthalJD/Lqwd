@@ -16,14 +16,15 @@ SOURCES += main.cpp\
         hq.cpp \
     widgets/console/bkons.cpp \
     lib/engine.cpp \
-    lib/errormachine.cpp
+    lib/errormachine.cpp \
+    lib/commandnexus.cpp
 
 HEADERS  += hq.h \
     widgets/console/bkons.h \
     lib/engine.h \
     lib/errormachine.h \
-    lib/commandStructure.h \
-    lib/defines.h
+    lib/defines.h \
+    lib/commandnexus.h
 
 FORMS    += hq.ui
 

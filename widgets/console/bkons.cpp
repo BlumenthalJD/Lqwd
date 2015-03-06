@@ -1,49 +1,46 @@
-/****************************************************************************
-**
-**      Author : Josh Bosley
-**
-****************************************************************************/
-
-#include"lib/engine.h"
-#include "widgets/console/bkons.h"
-
 #include <QDebug>
 #include <QScrollBar>
-
+#include"lib/engine.h"
+#include "widgets/console/bkons.h"
 
 Bkons::Bkons(QWidget *parent)
     : QPlainTextEdit(parent)
 {
+    // Connect the console to the engine for communication.
     connect(this, SIGNAL(dataReady(QString)), &engine, SLOT(processCommand(QString)));
     connect(&engine, SIGNAL(responseReady(QString)), this, SLOT(responseOut(QString)));
 
+    // Initialize input buffer, history index, and history size limit
     buffer = "";
     hIndex = 0;
     maxHistory = 1000;
     document()->setMaximumBlockCount(1000);
+
+    // Color the screen, set the font
     QPalette p = palette();
     p.setColor(QPalette::Base, Qt::black);
     p.setColor(QPalette::Text, Qt::green);
+    setFont (QFont ("Courier", 13));
     setPalette(p);
 }
 
 void Bkons::beginSession()
 {
-    active = true;
+    backSpaceNline = false;
     lqwdText = "@lqwd>  ";
     currentActivity = "core";
-    appendPlainText(currentActivity + lqwdText);
+    getUserPrompt();
     setEnabled(true);
 }
 
 void Bkons::puts(QString data)
 {
-    // Insert text, and scroll screen to bottom
-    insertPlainText("\n" + data);
+    // Insert nl + data, then scroll screen to bottom
+    insertPlainText( "\n" + data);
     QScrollBar *bar = verticalScrollBar();
     bar->setValue(bar->maximum());
-    // Add the activity id
-    appendPlainText(currentActivity + lqwdText);
+
+    getUserPrompt();
 }
 
 void Bkons::responseOut(QString response)
@@ -68,7 +65,8 @@ void Bkons::keyPressEvent(QKeyEvent *e)
             textCursor().removeSelectedText();
             textCursor().deletePreviousChar();
             setTextCursor(storeCursorPos);
-            insertPlainText( "\n" + currentActivity + lqwdText + buffer);
+            getUserPrompt();
+            insertPlainText(buffer);
         }
         break;
     }
@@ -119,12 +117,6 @@ void Bkons::keyPressEvent(QKeyEvent *e)
     }
 }
 
-void Bkons::addKeyToBuffer(QString key)
-{
-    buffer += key;
-    insertPlainText(key);
-}
-
 void Bkons::mousePressEvent(QMouseEvent *e)
 {
     Q_UNUSED(e)
@@ -141,3 +133,15 @@ void Bkons::contextMenuEvent(QContextMenuEvent *e)
     Q_UNUSED(e)
 }
 
+void Bkons::addKeyToBuffer(QString key)
+{
+    buffer += key;
+    insertPlainText(key);
+}
+
+void Bkons::getUserPrompt()
+{
+    appendHtml("<font color=\"White\">" +
+               currentActivity + lqwdText +
+               "</font>");
+}

@@ -106,7 +106,7 @@ void Engine::insertIntoMap(QString cmd)
         }
     }
     // Send the commands and arguments to be saved
-    cmdData.insertCommand(exportCommands, exportArguments);
+    cmdNexus.addCommandToMap(exportCommands, exportArguments);
 }
 
 /*
@@ -116,7 +116,7 @@ void Engine::processCommand(QString cmd)
 {
 
     // Translate the filtered input to the mapped command and args
-   QString command = cmdData.translateCommand(commandFilter(cmd));
+   QString command = cmdNexus.translateCommand(commandFilter(cmd));
 
     if( command == REF_UNDEFINED )
     {

@@ -1,9 +1,3 @@
-/****************************************************************************
-**
-**      Author : Josh Bosley
-**
-****************************************************************************/
-
 #ifndef CONSOLE_BKONS
 #define CONSOLE_BKONS
 
@@ -39,7 +33,6 @@ private:
     Engine engine;
 
     // State, and display
-    bool active;
     int hIndex;
     QString lqwdText,
     currentActivity;
@@ -47,9 +40,12 @@ private:
     // Input Controls
     QString buffer;
     int maxHistory;
+    bool backSpaceNline;
     QStringList history;
 
     void addKeyToBuffer(QString key);
+
+    void getUserPrompt();
 };
 
 #endif // CONSOLE_H
