@@ -1,4 +1,7 @@
 
+-> Move QStringList CoreEngine::commandFilter(QString input) to cmdNexus and apply before translation. 
+
+
 1. Figure out why down arrow requires two presses 
 
 1. Setup left arrow function [ currently screwing up the buffer ]
