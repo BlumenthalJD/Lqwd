@@ -3,20 +3,15 @@
 #include "widgets/console/bkons.h"
 
 /*
-    Modules that itneract with the user
+    Module that itneract with the user
 */
 #include"lib/coremodule.h"
 
 Bkons::Bkons(QWidget *parent)
     : QPlainTextEdit(parent)
 {
-    /*
-
-        SETUP CONFIG FILE FOR LOADING SETTINGS FOR bkons AND
-        FOR coremodule.h
-
-    */
     lqwdText = "@lqwd>  ";
+
     // In case module doesn't provide a setting - moduleId must be given.
     defaultSettings.loadFile(":/config/bkons/bkons_config.lqwd");
 
@@ -24,12 +19,9 @@ Bkons::Bkons(QWidget *parent)
     buffer = "";
 
     /*
-
-            Load the default module
-
+            Load the module
     */
     loadModule(&coreModule.settings);
-
 }
 
 void Bkons::loadModule(ConsoleSettings * settings)
@@ -89,19 +81,14 @@ void Bkons::loadModule(ConsoleSettings * settings)
     setFont (QFont (font,fontSize));
     setPalette(p);
 
-    switch(currentModule)
-    {
-    // Default module should have the moduleId of 0
-    case 0:
+    // Using module ids for potential future expansions
+    if( 0 == currentModule )
     {
         connect(this, SIGNAL(dataReady(QString)), &coreModule, SLOT(processCommand(QString)));
         connect(&coreModule, SIGNAL(responseReady(QString)), this, SLOT(responseOut(QString)));
-        break;
     }
-    default:
+    else
         errM.catchError("Module could not be loaded", -1);
-        break;
-    }
 }
 
 void Bkons::beginSession()
@@ -156,11 +143,7 @@ void Bkons::keyPressEvent(QKeyEvent *e)
             tmpCursor.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, 1);
             setTextCursor(tmpCursor);
         }
-        /*
 
-                    NEED TO ADJUST BUFFER TO MATCH TEXT
-
-        */
         qDebug() << " LEFT ARROW >  NEED TO ADJUST BUFFER TO MATCH TEXT. \n\n Disable if empty buffer ";
 
         break;
