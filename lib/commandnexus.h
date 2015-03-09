@@ -5,7 +5,8 @@
 #include <QDebug>
 #include <QString>
 #include <QStringList>
-#include "defines.h"
+
+#include "../widgets/console/defines.h"
 
 // The map structure for commands and arguments
 struct cmap

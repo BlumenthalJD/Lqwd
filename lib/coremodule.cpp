@@ -1,24 +1,23 @@
-#include "engine.h"
+#include "coremodule.h"
 #include <QDebug>
 #include <QDir>
 
-Engine::Engine(QObject *parent) :
+CoreEngine::CoreEngine(QObject *parent) :
     QObject(parent)
 {
+    moduleId = 1;
     if( OSINDEX == -1 )
         errM.catchError("Unknown OS", -1);
     else
+    {
         loadCommandMap();
-
-
-
-    errM.catchError(" TO DO : \n Program : Engine::doCommand()  , Console arrow / history functionality\n\n ");
-
+        settings.loadFile(":/config/coreModule/core_config.lqwd");
+    }
 }
 
-void Engine::loadCommandMap()
+void CoreEngine::loadCommandMap()
 {
-    QFile inputFile(":/config/command_map.lqwd");
+    QFile inputFile(":/config/coreModule/command_map.lqwd");
     if (inputFile.open(QIODevice::ReadOnly))
     {
        QTextStream in(&inputFile);
@@ -43,7 +42,7 @@ void Engine::loadCommandMap()
 /*
     Chop up input fromt he config file, and create the command maps
 */
-void Engine::insertIntoMap(QString cmd)
+void CoreEngine::insertIntoMap(QString cmd)
 {
     QStringList exportCommands, exportArguments, tempArguments;
 
@@ -112,7 +111,7 @@ void Engine::insertIntoMap(QString cmd)
 /*
     Slot that recieves the command from the user
 */
-void Engine::processCommand(QString cmd)
+void CoreEngine::processCommand(QString cmd)
 {
 
     // Translate the filtered input to the mapped command and args
@@ -137,7 +136,7 @@ void Engine::processCommand(QString cmd)
 /*
     Filter out the arguments and the variables from input and return info
 */
-QStringList Engine::commandFilter(QString input)
+QStringList CoreEngine::commandFilter(QString input)
 {
     QString buffer = "";
     QStringList pieces;
@@ -187,6 +186,7 @@ QStringList Engine::commandFilter(QString input)
     if( buffer != "" && input.split(" ").length() > 1)
     {
         pieces.append(buffer);
+
     }
 
     // if it is a simple command, and nothing trailing
@@ -209,7 +209,7 @@ QStringList Engine::commandFilter(QString input)
 /*
     Once the command is processed, and if mapped will be sent to be executed.
 */
-QString Engine::doCommand(QString cmd)
+QString CoreEngine::doCommand(QString cmd)
 {
     QProcess run;
 

@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/">
-        <file>config/command_map.lqwd</file>
+        <file>config/bkons/bkons_config.lqwd</file>
+        <file>config/coreModule/core_config.lqwd</file>
+        <file>config/coreModule/command_map.lqwd</file>
     </qresource>
 </RCC>

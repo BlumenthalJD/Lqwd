@@ -26,4 +26,8 @@
 #define REF_UNDEFINED "!"
 #define REF_PRIOR "*"
 
+// Max caps
+#define CAP_INPUT_BUFFER 1024
+
+
 #endif // DEFINES_H

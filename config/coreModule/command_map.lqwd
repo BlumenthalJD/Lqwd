@@ -36,5 +36,3 @@ rm:del:rm,-rf:/F /S /Q:-rf
 ping:*:*
 
 uptime:!:*
-
-

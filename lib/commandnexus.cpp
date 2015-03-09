@@ -78,7 +78,8 @@ QString CommandNexus::translateCommand(QStringList cmd)
                     translation += " ";
             }
            // Return the translated command
-           return translation;
+
+            return translation;
        }
     }
     // Command not found
