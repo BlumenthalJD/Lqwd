@@ -3,7 +3,7 @@
 #include "widgets/console/bkons.h"
 
 /*
-    Module that itneract with the user
+    Module that interacts with the user
 */
 #include"lib/coremodule.h"
 
