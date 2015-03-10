@@ -1,6 +1,7 @@
 #ifndef CONSOLE_BKONS
 #define CONSOLE_BKONS
 
+#include <QDir>
 #include <QStack>
 #include <QPlainTextEdit>
 
@@ -61,7 +62,6 @@ private:
     int bufferCursorIndex;
 
     // Indicates when the user is using arrow keys, and where in the buffer they are
-    char activeArrow;
     int arrowIndex;
 
     // Max history saved /Index of histroy being viewd /the history

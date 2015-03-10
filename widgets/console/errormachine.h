@@ -2,6 +2,8 @@
 #define ERRORMACHINE_H
 
 #include <QObject>
+#include <QProcess>
+
 #include "defines.h"
 
 class ErrorMachine : public QObject
@@ -15,6 +17,8 @@ signals:
 public slots:
 
     void catchError(QString, int arg=0);
+
+    void handleProcessError(QProcess::ProcessError);
 
 };
 

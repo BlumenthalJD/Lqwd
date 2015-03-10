@@ -11,8 +11,8 @@ Bkons::Bkons(QWidget *parent)
     : QPlainTextEdit(parent)
 {
     lqwdText = "@lqwd>  ";
-    activeArrow = 'n';
     arrowIndex = 0;
+
 
     // In case module doesn't provide a setting - moduleId must be given.
     defaultSettings.loadFile(":/config/bkons/bkons_config.lqwd");

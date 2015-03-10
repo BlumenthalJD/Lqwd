@@ -30,41 +30,54 @@ QString CommandNexus::translateCommand(QStringList cmd)
             // Go through remaining arguments in ret
             for(int j = 1; j < cmd.count(); j++)
             {
-                // Compair against the first entry of every arg map for that command
-                for(int k = 0; k < commandMap[i].argumentMap.count(); k++)
+                if( commandMap[i].argumentMap.count() > 0 )
                 {
-                    // If an argument for the command has a translation for the current os
-                    // add it, if that translation is explicitly undefined, ignore it.
-                    if( commandMap[i].argumentMap[k][0] == cmd[j] )
+                    // Compair against the first entry of every arg map for that command
+                    for(int k = 0; k < commandMap[i].argumentMap.count(); k++)
                     {
-                        // If the current index has not been translated
-                        if( !added.contains(j))
+                        // If an argument for the command has a translation for the current os
+                        // add it, if that translation is explicitly undefined, ignore it.
+                        if( commandMap[i].argumentMap[k][0] == cmd[j] )
                         {
-                            added.append(j);
-                            // If argument is explicitly undefined
-                            if( commandMap[i].argumentMap[k][OSINDEX] == REF_UNDEFINED )
+                            // If the current index has not been translated
+                            if( !added.contains(j))
                             {
-                                // If we aren't ignoring the command, add it
-                                if( !ignoreExplicitlyUndefinedArguments )
+                                added.append(j);
+                                // If argument is explicitly undefined
+                                if( commandMap[i].argumentMap[k][OSINDEX] == REF_UNDEFINED )
                                 {
-                                    temp.append(cmd[j]);
+                                    // If we aren't ignoring the command, add it
+                                    if( !ignoreExplicitlyUndefinedArguments )
+                                    {
+                                        temp.append(cmd[j]);
+                                    }
+                                }
+                                else
+                                {
+                                    // Argument not explictly undefined, add translation
+                                    temp.append(commandMap[i].argumentMap[k][OSINDEX]);
                                 }
                             }
-                            else
+                        }
+                        else
+                        {
+                            if( !added.contains(j))
                             {
-                                // Argument not explictly undefined, add translation
-                                temp.append(commandMap[i].argumentMap[k][OSINDEX]);
+                                // Add arg as-is, not defined
+                                temp.append(cmd[j]);
+                                added.append(j);
                             }
                         }
                     }
-                    else
+                }
+                // There are no arguments given for the command, so pass it along
+                else
+                {
+                    if( !added.contains(j))
                     {
-                        if( !added.contains(j))
-                        {
-                            // Add arg as-is, not defined
-                            temp.append(cmd[j]);
-                            added.append(j);
-                        }
+                        // Add arg as-is, not defined
+                        temp.append(cmd[j]);
+                        added.append(j);
                     }
                 }
             }

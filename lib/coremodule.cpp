@@ -5,13 +5,34 @@
 CoreEngine::CoreEngine(QObject *parent) :
     QObject(parent)
 {
-    moduleId = 1;
-    if( OSINDEX == -1 )
-        errM.catchError("Unknown OS", -1);
-    else
+    // Load the config file to command nexus ( move this to nexus )
+    loadCommandMap();
+
+    // Load the UI settings
+    settings.loadFile(":/config/coreModule/core_config.lqwd");
+
+    // Create the process, and setup error handling
+    proc = new QProcess;
+    connect(proc, SIGNAL(error(QProcess::ProcessError)), &errM, SLOT(handleProcessError(QProcess::ProcessError)));
+
+    // Setup os specifics
+    switch(OSINDEX)
     {
-        loadCommandMap();
-        settings.loadFile(":/config/coreModule/core_config.lqwd");
+        case -1:
+            errM.catchError("Unknown OS", -1);
+        break;
+        case 1:
+        {
+            proc->setWorkingDirectory("C:\\");
+            QDir::setCurrent("C:\\");
+            break;
+        }
+        case 2:
+        {
+            proc->setWorkingDirectory("/");
+            QDir::setCurrent("/");
+            break;
+        }
     }
 }
 
@@ -211,15 +232,57 @@ QStringList CoreEngine::commandFilter(QString input)
 */
 QString CoreEngine::doCommand(QString cmd)
 {
-    QProcess run;
+    QString response = "";
+    QStringList cmdChunks = cmd.split(" ");
 
-    if( OSINDEX == 1 )
-    {
-        // Special remove case
-    }
-    else
-    {
+    errM.catchError(" TODO : WORK ON DOCOMMAND ");
 
+    switch(OSINDEX)
+    {
+        case 1:
+        {
+            response = " WINDOWS COMMAND ";
+            break;
+        }
+        case 2:
+        {
+        // Figure out a better way to test for things like cd
+            if( cmdChunks[0] == "cd" && cmdChunks.length() > 1 )
+            {
+                // See if new dir is ../ , if so generate the QDir path
+                errM.catchError(" coreMod doCommand -> ONLY SUPPORTS ../ ATM , FIND WAY TO ../../../ n ");
+                QString newDir = "";
+                if( cmdChunks[1] == "../" )
+                {
+                    QDir curr = QDir::current();
+                    curr.cdUp();
+                    newDir = curr.path();
+                }
+                else
+                    newDir = cmdChunks[1];
+
+                // If the folder exists, move to it
+                if( QDir(newDir).exists() )
+                {
+                    proc->setWorkingDirectory(newDir);
+                    QDir::setCurrent(newDir);
+                }
+                else
+                    response += (cmdChunks[1] + " is not a folder.");
+            }
+            else
+            {
+                response =+ " LINUX COMMAND \n";
+                proc->start(cmd);
+                proc->waitForFinished(-1);
+                QByteArray result = proc->readAllStandardOutput();
+                QString res(result);
+                response += res;
+                proc->close();
+            }
+            break;
+        }
     }
-    return (" Translated to : " + cmd);
+
+    return ("\t\t\t Response From : " + cmd + "\n" + response);
 }

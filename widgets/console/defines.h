@@ -3,12 +3,15 @@
 
 #ifdef Q_OS_WIN32
     #define OSINDEX 1
+    #define DIR_INIT "C:\\"
 #endif
 #ifdef Q_OS_LINUX
     #define OSINDEX 2
+    #define DIR_INIT "$HOME"
 #endif
 #ifdef Q_OS_MAC
     #define OSINDEX 2
+#define DIR_INIT "$HOME"
 #endif
 
 #ifndef OSINDEX

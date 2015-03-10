@@ -13,3 +13,8 @@ void ErrorMachine::catchError(QString err, int arg)
     if( arg != 0 )
         qDebug() << "ARG : " << arg;
 }
+
+void ErrorMachine::handleProcessError(QProcess::ProcessError e)
+{
+    qDebug() << e;
+}

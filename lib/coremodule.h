@@ -46,6 +46,8 @@ private:
 
     // Inititate the command, and display output
     QString doCommand(QString);
+
+    QProcess * proc;
 };
 
 #endif // LQWD_CORE_MODULE
