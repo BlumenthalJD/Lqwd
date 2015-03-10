@@ -60,8 +60,9 @@ private:
     //The current index of the cursor relative to buffer
     int bufferCursorIndex;
 
-    // Indicates when the user is using arrow keys
-    bool arrowSequenceActive;
+    // Indicates when the user is using arrow keys, and where in the buffer they are
+    char activeArrow;
+    int arrowIndex;
 
     // Max history saved /Index of histroy being viewd /the history
     int maxHistory, hIndex;

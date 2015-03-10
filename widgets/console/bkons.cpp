@@ -11,6 +11,8 @@ Bkons::Bkons(QWidget *parent)
     : QPlainTextEdit(parent)
 {
     lqwdText = "@lqwd>  ";
+    activeArrow = 'n';
+    arrowIndex = 0;
 
     // In case module doesn't provide a setting - moduleId must be given.
     defaultSettings.loadFile(":/config/bkons/bkons_config.lqwd");
@@ -121,42 +123,70 @@ void Bkons::keyPressEvent(QKeyEvent *e)
         if(buffer.length() > 0)
         {
             setFocus();
-            buffer.remove(buffer.length()-1,1);
             QTextCursor storeCursorPos = textCursor();
-            moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
-            moveCursor(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
-            moveCursor(QTextCursor::End, QTextCursor::KeepAnchor);
-            textCursor().removeSelectedText();
-            textCursor().deletePreviousChar();
-            setTextCursor(storeCursorPos);
-            getUserPrompt();
-            insertPlainText(buffer);
+
+            if( 0 == arrowIndex )
+            {
+                buffer.remove(buffer.length()-1,1);
+                moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
+                moveCursor(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
+                moveCursor(QTextCursor::End, QTextCursor::KeepAnchor);
+                textCursor().removeSelectedText();
+                textCursor().deletePreviousChar();
+                getUserPrompt();
+                insertPlainText(buffer);
+            }
+            else if ( 0 < arrowIndex )
+            {
+                if( buffer.length() > arrowIndex )
+                {
+                    buffer.remove(buffer.length()  -1 -arrowIndex,1);
+                    moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
+                    moveCursor(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
+                    moveCursor(QTextCursor::End, QTextCursor::KeepAnchor);
+                    textCursor().removeSelectedText();
+                    textCursor().deletePreviousChar();
+                    setTextCursor(storeCursorPos);
+                    getUserPrompt();
+                    insertPlainText(buffer);
+                    storeCursorPos.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, (arrowIndex));
+                    setTextCursor(storeCursorPos);
+                }
+            }
         }
         break;
     }
     case Qt::Key_Left:
     {
-        if(buffer.length() > 0)
-        {
-            //int bufferLen = buffer.length();
-            QTextCursor tmpCursor = textCursor();
-            tmpCursor.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, 1);
-            setTextCursor(tmpCursor);
-        }
-
-        qDebug() << " LEFT ARROW >  NEED TO ADJUST BUFFER TO MATCH TEXT. \n\n Disable if empty buffer ";
-
+        if( buffer.length() > 0 )
+            if( buffer.length() > arrowIndex )
+            {
+                //int bufferLen = buffer.length();
+                QTextCursor tmpCursor = textCursor();
+                tmpCursor.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, 1);
+                setTextCursor(tmpCursor);
+                arrowIndex++;
+            }
         break;
     }
     case Qt::Key_Right:
+    {
+        if( buffer.length() > 0 )
+            if( 0 < arrowIndex )
+            {
+                QTextCursor tmpCursor = textCursor();
+                tmpCursor.movePosition(QTextCursor::Right, QTextCursor::MoveAnchor, 1);
+                setTextCursor(tmpCursor);
+                arrowIndex--;
+            }
         break;
+    }
     // Cycle up through history
     case Qt::Key_Up:
     {
         if(hIndex < history.length() && hIndex >= 0)
         {
             setFocus();
-            buffer.remove(buffer.length()-1,buffer.length());
             QTextCursor storeCursorPos = textCursor();
             moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
             moveCursor(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
@@ -177,7 +207,7 @@ void Bkons::keyPressEvent(QKeyEvent *e)
         if(history.length() > hIndex+1 )
         {
             setFocus();
-            buffer.remove(buffer.length()-1,buffer.length());
+            buffer = history.at(hIndex+1);
             QTextCursor storeCursorPos = textCursor();
             moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
             moveCursor(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
@@ -185,7 +215,6 @@ void Bkons::keyPressEvent(QKeyEvent *e)
             textCursor().removeSelectedText();
             textCursor().deletePreviousChar();
             setTextCursor(storeCursorPos);
-            buffer = history.at(hIndex+1);
             getUserPrompt();
             insertPlainText(buffer);
             hIndex++;
@@ -212,8 +241,8 @@ void Bkons::keyPressEvent(QKeyEvent *e)
             // Send data to module for processing
             emit dataReady(buffer);
 
-            //tempHistory = history;
             buffer = "";
+            arrowIndex = 0;
             hIndex = history.length()-1;
         }
         break;
@@ -245,8 +274,34 @@ void Bkons::addKeyToBuffer(QString key)
     // Test buffer cap
     if( buffer.length() <= CAP_INPUT_BUFFER )
     {
-        buffer += key;
-        insertPlainText(key);
+        // Find out where in the buffer to put the key
+        if( 0 == arrowIndex )
+        {
+            // Appending to end of text
+            buffer += key;
+            insertPlainText(key);
+        }
+        else
+        {
+            // User moved cursor, place key in buffer at location
+            buffer.insert((buffer.length()-arrowIndex), key);
+
+            setFocus();
+            QTextCursor storeCursorPos = textCursor();
+
+            moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
+            moveCursor(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
+            moveCursor(QTextCursor::End, QTextCursor::KeepAnchor);
+            textCursor().removeSelectedText();
+            textCursor().deletePreviousChar();
+            getUserPrompt();
+            insertPlainText(buffer);
+            storeCursorPos.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, arrowIndex);
+            setTextCursor(storeCursorPos);
+        }
+
+
+
     }
     else
     {
