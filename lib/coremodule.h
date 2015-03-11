@@ -1,53 +1,42 @@
 #ifndef LQWD_CORE_MODULE
 #define LQWD_CORE_MODULE
 
-#include <QHash>
+#include <QDebug>
 #include <QObject>
-#include <QProcess>
 
-// Retrieves and translates commands
-#include "commandnexus.h"
-
-// For use of console defines, and error handling
+#include "coreprocess.h"
 #include "../widgets/console/defines.h"
 #include "../widgets/console/errormachine.h"
 #include "../widgets/console/consolesettings.h"
 
-class CoreEngine : public QObject
+class CoreModule : public QObject
 {
     Q_OBJECT
 public:
-    explicit CoreEngine(QObject *parent = 0);
+    explicit CoreModule(QObject *parent = 0);
+
+    // Module ID, and Settings required by Bkons
     int moduleId;
-    // Settings
     ConsoleSettings settings;
 
 signals:
+    // Core Process is done, send back response
     void responseReady(QString);
 
-public slots:
+    // Send Data to core process
     void processCommand(QString);
 
-private:
-    QHash<QString, int> coreCmds;
+public slots:
+    // Get human's data and pass to core process
+    void humanInput(QString);
 
+    // Get response back from core process
+    void processReturn(QString);
+
+private:
     // Error handler
     ErrorMachine errM;
-
-    // Command Translator
-    CommandNexus cmdNexus;
-
-    // Takes in users command and seperates out arguments
-    QStringList commandFilter(QString);
-
-    // Read in the command file, and insert into command map
-    void loadCommandMap();
-    void insertIntoMap(QString);
-
-    // Inititate the command, and display output
-    QString doCommand(QString);
-
-    QProcess * proc;
+    CoreProcess cProc;
 };
 
 #endif // LQWD_CORE_MODULE

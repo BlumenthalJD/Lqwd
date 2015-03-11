@@ -1,6 +1,7 @@
 #ifndef COMMANDNEXUS_H
 #define COMMANDNEXUS_H
 
+#include <QFile>
 #include <QList>
 #include <QDebug>
 #include <QString>
@@ -23,14 +24,13 @@ struct cmap
 };
 typedef struct cmap _cmap;
 
-class CommandNexus
+class CoreNexus
 {
 public:
-    CommandNexus();
-    ~CommandNexus();
+    CoreNexus();
+    ~CoreNexus();
 
-    void addCommandToMap(QStringList cmd, QStringList args);
-    QString translateCommand(QStringList cmd);
+    QString translateCommand(QString cmd);
 
 private :
     QList<_cmap> commandMap;
@@ -38,6 +38,10 @@ private :
     // Explicitly undefined os arguments (indicated by ! in command_map.lqwd)
     // will be ignored, flip bool to true to allow
     bool ignoreExplicitlyUndefinedArguments;
+
+    void loadCommandMap();
+    void insertIntoMap(QString);
+    void addCommandToMap(QStringList cmd, QStringList args);
 };
 
 #endif // COMMANDNEXUS_H

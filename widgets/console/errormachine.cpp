@@ -7,6 +7,11 @@ ErrorMachine::ErrorMachine(QObject *parent) :
     catchError("ErrorMachine Started");
 }
 
+void ErrorMachine::showMessage(QString m)
+{
+    qDebug() << "Message : " << m << "\n";
+}
+
 void ErrorMachine::catchError(QString err, int arg)
 {
     qDebug() << "CAUGHT: " << err ;

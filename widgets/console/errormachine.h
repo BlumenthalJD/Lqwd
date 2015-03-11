@@ -16,6 +16,8 @@ signals:
 
 public slots:
 
+    void showMessage(QString);
+
     void catchError(QString, int arg=0);
 
     void handleProcessError(QProcess::ProcessError);

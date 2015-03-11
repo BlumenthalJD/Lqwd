@@ -15,19 +15,21 @@ TEMPLATE = app
 SOURCES += main.cpp\
         hq.cpp \
     widgets/console/bkons.cpp \
-    lib/commandnexus.cpp \
     lib/coremodule.cpp \
     widgets/console/consolesettings.cpp \
-    widgets/console/errormachine.cpp
+    widgets/console/errormachine.cpp \
+    lib/coreprocess.cpp \
+    lib/corenexus.cpp
 
 HEADERS  += hq.h \
     widgets/console/bkons.h \
     lib/defines.h \
-    lib/commandnexus.h \
     lib/coremodule.h \
     widgets/console/consolesettings.h \
     widgets/console/defines.h \
-    widgets/console/errormachine.h
+    widgets/console/errormachine.h \
+    lib/coreprocess.h \
+    lib/corenexus.h
 
 FORMS    += hq.ui
 

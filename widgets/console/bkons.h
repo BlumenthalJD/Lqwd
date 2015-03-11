@@ -39,7 +39,7 @@ private:
     ConsoleSettings defaultSettings;
 
     // Default module
-    CoreEngine coreModule;
+    CoreModule coreModule;
 
     ErrorMachine errM;
 

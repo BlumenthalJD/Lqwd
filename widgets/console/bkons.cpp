@@ -10,6 +10,8 @@
 Bkons::Bkons(QWidget *parent)
     : QPlainTextEdit(parent)
 {
+    errM.showMessage("Bkons Inititated");
+
     lqwdText = "@lqwd>  ";
     arrowIndex = 0;
 
@@ -86,7 +88,7 @@ void Bkons::loadModule(ConsoleSettings * settings)
     // Using module ids for potential future expansions
     if( 0 == currentModule )
     {
-        connect(this, SIGNAL(dataReady(QString)), &coreModule, SLOT(processCommand(QString)));
+        connect(this, SIGNAL(dataReady(QString)), &coreModule, SLOT(humanInput(QString)));
         connect(&coreModule, SIGNAL(responseReady(QString)), this, SLOT(responseOut(QString)));
     }
     else
