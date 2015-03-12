@@ -44,6 +44,7 @@ private :
     void loadCommandMap();
     void insertIntoMap(QString);
     void addCommandToMap(QStringList cmd, QStringList args);
+    QStringList filterCommand(QString);
 };
 
 #endif // COMMANDNEXUS_H

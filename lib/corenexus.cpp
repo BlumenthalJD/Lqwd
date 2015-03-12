@@ -98,15 +98,10 @@ void CoreNexus::insertIntoMap(QString cmd)
     commandMap.append(_cmap(exportCommands, exportArguments));
 }
 
-QString CoreNexus::translateCommand(QString input)
+QStringList CoreNexus::filterCommand(QString input)
 {
-
-    errM.consoleOut(" CoreNexus Translating");
-    /*
-        Filter the input to seperate out command and arguments
-    */
-    QString buffer = "";
     QStringList cmd;
+    QString buffer = "";
     bool ignore = false, spaces = false;
 
     foreach(QString ch, input)
@@ -162,8 +157,19 @@ QString CoreNexus::translateCommand(QString input)
 
     // Just in case any slip by
     cmd.removeAll("");
+    return cmd;
+}
+
+QString CoreNexus::translateCommand(QString input)
+{
+    errM.consoleOut(" CoreNexus Filtering");
+    /*
+        Filter the input to seperate out command and arguments
+    */
+    QStringList cmd = filterCommand(input);
 
 
+    errM.consoleOut(" CoreNexus Translating");
     /*
             Perform actual translation
     */
@@ -243,6 +249,7 @@ QString CoreNexus::translateCommand(QString input)
                     translation += " ";
             }
             // Return the translated command
+            errM.consoleOut(" CoreNexus Translated " + input + " to " + translation);
             return translation;
        }
     }

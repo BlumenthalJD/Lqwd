@@ -10,8 +10,18 @@
     <height>140</height>
    </rect>
   </property>
+  <property name="maximumSize">
+   <size>
+    <width>412</width>
+    <height>140</height>
+   </size>
+  </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Message !</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../../icons/icons.qrc">
+    <normaloff>:/icons/term.ico</normaloff>:/icons/term.ico</iconset>
   </property>
   <widget class="QTextBrowser" name="textBrowser">
    <property name="geometry">
@@ -24,6 +34,8 @@
    </property>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../icons/icons.qrc"/>
+ </resources>
  <connections/>
 </ui>
