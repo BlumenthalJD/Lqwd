@@ -13,6 +13,11 @@ void CoreNexus::loadCommandMap()
     QFile inputFile(":/config/coreModule/command_map.lqwd");
     if (inputFile.open(QIODevice::ReadOnly))
     {
+       QList<_carg> tempArgList;
+       bool insideCommandDefinition = false;
+       bool insideArgumentDefinition = false;
+       QString currentSequenceName = "", command = "", desc = "";
+
        QTextStream in(&inputFile);
        while (!in.atEnd())
        {
@@ -21,7 +26,91 @@ void CoreNexus::loadCommandMap()
                if( ln != QString(REF_COMMENT))
                    if(ln.at(0) != REF_COMMENT)
                    {
-                       insertIntoMap(ln);
+                       // If not inside any definitions
+                       if( !insideCommandDefinition && !insideArgumentDefinition )
+                       {
+                           // If name not set
+                           if( currentSequenceName == "" )
+                               currentSequenceName = ln.trimmed();
+                           else
+                           {
+                               // Name already given, and not in definitions
+                               if( ln.at(0) == JBOS_DEFINE )
+                               {
+                                   insideCommandDefinition = true;
+                               }
+                           }
+                       }
+                       else if( insideCommandDefinition && !insideArgumentDefinition )
+                       {
+                           // Getting here means it is looking for a command to be mapped, and
+                           // looking to see if there are any arguments to be added.
+                           if( ln.split(DELIMITER_BLOCK)[0].trimmed() == "command" )
+                           {
+                               command = ln.split(DELIMITER_BLOCK)[1].trimmed();
+                               desc = ln.split(DELIMITER_BLOCK)[2].trimmed();
+                               qDebug() << command;
+                           }
+                           else if( ln.split(DELIMITER_BLOCK)[0].trimmed() == "args" )
+                           {
+                               insideArgumentDefinition = true;
+                           }
+                           else if( currentSequenceName.trimmed() == "os_commands"
+                                    && ln.trimmed() != QString(JBOS_ENDEFINE))
+                           {
+                               // In os specific commands, translate and add to translationMap
+                               QStringList transCommand;
+                               QStringList cmdBlocks = ln.trimmed().split(DELIMITER_BLOCK);
+                               // Add commmand 0 as the input command,
+                               // then determine the output command
+                               transCommand.append(cmdBlocks[0]);
+                               if( cmdBlocks[OSINDEX] == REF_PRIOR )
+                               {
+                                   if(cmdBlocks[OSINDEX-1] == REF_PRIOR)
+                                       transCommand.append(cmdBlocks[OSINDEX-2]);
+                                   else if(cmdBlocks[OSINDEX-1] == REF_UNDEFINED)
+                                       transCommand.append(cmdBlocks[0]);
+                                   else
+                                       transCommand.append(cmdBlocks[OSINDEX-1]);
+                               }
+                               else if( cmdBlocks[OSINDEX] == REF_UNDEFINED )
+                               {
+                                   if( !ignoreExplicitlyUndefinedArguments )
+                                       transCommand.append(cmdBlocks[0]);
+                               }
+                               else
+                               {
+                                   transCommand.append(cmdBlocks[OSINDEX]);
+                               }
+                               translationMap.append(_transCmd(transCommand[0], transCommand[1]));
+                           }
+
+                       }
+                       else if( insideCommandDefinition && insideArgumentDefinition &&
+                                ln.trimmed() != QString(JBOS_ENDEFINE))
+                       {
+                           tempArgList.append(_carg(ln.split(DELIMITER_BLOCK)[0].trimmed(),
+                                              ln.split(DELIMITER_BLOCK)[1].trimmed()));
+                       }
+
+                       if( ln.trimmed() == QString(JBOS_ENDEFINE)
+                           && currentSequenceName.trimmed() != "os_commands")
+                       {
+                           // Create the command with the information, and reset local temps
+                           _cmd newCmd;
+                           newCmd.sequenceName = currentSequenceName;
+                           newCmd.description = desc;
+                           newCmd.arguments = tempArgList;
+                           newCmd.cmd = command;
+                           commandMap.append(newCmd);
+
+                           insideArgumentDefinition = false;
+                           insideCommandDefinition = false;
+                           currentSequenceName = "";
+                           tempArgList.clear();
+                           command = "";
+                           desc = "";
+                       }
                    }
        }
        inputFile.close();
@@ -30,72 +119,6 @@ void CoreNexus::loadCommandMap()
     {
         errM.catchError(" Could not open resource file : command_map.lqwd ", -1);
     }
-}
-
-void CoreNexus::insertIntoMap(QString cmd)
-{
-    QStringList exportCommands, exportArguments, tempArguments;
-
-    // 0 = Commands, >0 = Arguments
-    QStringList cmdBlocks = cmd.split(DELIMITER_LIST);
-
-    for(int h = 0; h < cmdBlocks.count(); h++)
-    {
-        QStringList commands = cmdBlocks[h].split(DELIMITER_BLOCK);
-
-        (h == 0) ? exportCommands.append(commands[0]) : tempArguments.append(commands[0]);
-
-        for( int i = 1; i < commands.length(); i++ )
-        {
-           if( commands[i] == REF_PRIOR )
-           {
-               if( commands[i-1] == REF_PRIOR)
-               {
-                   (h == 0) ? exportCommands.append(commands[i-2]) : tempArguments.append(commands[i-2]);
-               }
-               else if (commands[i-1] == REF_UNDEFINED)
-               {
-                   (h == 0) ? exportCommands.append(commands[i-2]) : tempArguments.append(commands[i-2]);
-               }
-               else
-               {
-                   (h == 0) ? exportCommands.append(commands[i-1]) : tempArguments.append(commands[i-1]);
-               }
-           }
-           else if( commands[i] == REF_UNDEFINED)
-           {
-               (h == 0) ? exportCommands.append(REF_UNDEFINED) : tempArguments.append(REF_UNDEFINED);
-           }
-           else
-           {
-               (h == 0) ? exportCommands.append(commands[i]) : tempArguments.append(commands[i]);
-           }
-        }
-    }
-
-    // Once all arguments and commands are stored, seperate indidvidual arguments, and their maps out
-    // so they can be stored for reference
-    QString temp = "";
-    for( int i = 0, c = 0; i < tempArguments.count(); i++ )
-    {
-        // There will only be commands for the n of differ OS specified.
-        if( c < exportCommands.count())
-        {
-            temp += tempArguments[i];
-            c++;
-            if( c < exportCommands.count())
-                temp += DELIMITER_BLOCK;
-        }
-        // Once the n is reached, the next n items will a different argument type.
-        if ( c >= exportCommands.count())
-        {
-            exportArguments.append(temp);
-            temp = "";
-            c = 0;
-        }
-    }
-    // Send the commands and arguments to be saved
-    commandMap.append(_cmap(exportCommands, exportArguments));
 }
 
 QStringList CoreNexus::filterCommand(QString input)
@@ -160,100 +183,42 @@ QStringList CoreNexus::filterCommand(QString input)
     return cmd;
 }
 
-QString CoreNexus::translateCommand(QString input)
+QString CoreNexus::retrieveCommand(QString input)
 {
-    errM.consoleOut(" CoreNexus Filtering");
-    /*
-        Filter the input to seperate out command and arguments
-    */
-    QStringList cmd = filterCommand(input);
+    QString res = REF_UNDEFINED;
+    QStringList inCmd = filterCommand(input);
 
-
-    errM.consoleOut(" CoreNexus Translating");
-    /*
-            Perform actual translation
-    */
-    for( int i = 0; i < commandMap.count(); i++)
+    // First search through the command map
+    for( int i = 0; i < commandMap.length(); i++ )
     {
-        // Find and translate the command they want to run
-       if(commandMap[i].commandList[0] == cmd[0])
-       {
-            // temp qslist that will hold translations
-            QStringList temp;
-            temp.append(commandMap[i].commandList[OSINDEX]);
-
-            // List of translated cmd indexes
-            QList<int> added;
-
-            // Go through remaining arguments in ret
-            for(int j = 1; j < cmd.count(); j++)
+        if( commandMap[i].cmd == inCmd[0] )
+        {
+            res = commandMap[i].cmd;
+            for( int j = 1; j < inCmd.length(); j++ )
             {
-                if( commandMap[i].argumentMap.count() > 0 )
-                {
-                    // Compair against the first entry of every arg map for that command
-                    for(int k = 0; k < commandMap[i].argumentMap.count(); k++)
-                    {
-                        // If an argument for the command has a translation for the current os
-                        // add it, if that translation is explicitly undefined, ignore it.
-                        if( commandMap[i].argumentMap[k][0] == cmd[j] )
-                        {
-                            // If the current index has not been translated
-                            if( !added.contains(j))
-                            {
-                                added.append(j);
-                                // If argument is explicitly undefined
-                                if( commandMap[i].argumentMap[k][OSINDEX] == REF_UNDEFINED )
-                                {
-                                    // If we aren't ignoring the command, add it
-                                    if( !ignoreExplicitlyUndefinedArguments )
-                                    {
-                                        temp.append(cmd[j]);
-                                    }
-                                }
-                                else
-                                {
-                                    // Argument not explictly undefined, add translation
-                                    temp.append(commandMap[i].argumentMap[k][OSINDEX]);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            if( !added.contains(j))
-                            {
-                                // Add arg as-is, not defined
-                                temp.append(cmd[j]);
-                                added.append(j);
-                            }
-                        }
-                    }
-                }
-                // There are no arguments given for the command, so pass it along
-                else
-                {
-                    if( !added.contains(j))
-                    {
-                        // Add arg as-is, not defined
-                        temp.append(cmd[j]);
-                        added.append(j);
-                    }
-                }
+                res += inCmd[j];
+                if( j != inCmd.length()-1 )
+                    res += " ";
             }
-
-            // All arguments have been added, so make the temp list into a string to execute
-            QString translation = "";
-            for(int jb = 0; jb < temp.count(); jb++)
-            {
-                translation += temp[jb];
-                if(jb != temp.count()-1)
-                    translation += " ";
-            }
-            // Return the translated command
-            errM.consoleOut(" CoreNexus Translated " + input + " to " + translation);
-            return translation;
-       }
+            return res;
+        }
     }
-    // Command not found
-    return REF_UNDEFINED;
 
+    // Then search through the translation map
+    for( int i = 0; i < translationMap.length(); i++ )
+    {
+        if( translationMap[i].input == inCmd[0] )
+        {
+            res = translationMap[i].translation;
+            for( int j = 1; j < inCmd.length(); j++ )
+            {
+                res += inCmd[j];
+                if( j != inCmd.length()-1 )
+                    res += " ";
+            }
+            return res;
+        }
+    }
+
+    return REF_UNDEFINED;
 }

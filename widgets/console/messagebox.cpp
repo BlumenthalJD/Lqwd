@@ -13,3 +13,8 @@ MessageBox::~MessageBox()
 {
     delete ui;
 }
+
+void MessageBox::on_pushButton_clicked()
+{
+    this->close();
+}

@@ -21,6 +21,8 @@
 // Delimiters from config, and use in engine.
 // If these change need to change, make the changes
 // in the config/command_map.lqwd too
+#define JBOS_DEFINE '<'
+#define JBOS_ENDEFINE '>'
 #define DELIMITER_LIST ","
 #define DELIMITER_BLOCK ":"
 

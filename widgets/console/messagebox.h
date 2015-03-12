@@ -15,6 +15,9 @@ public:
     explicit MessageBox(QString message, QWidget *parent = 0);
     ~MessageBox();
 
+private slots:
+    void on_pushButton_clicked();
+
 private:
     Ui::MessageBox *ui;
 };

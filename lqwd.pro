@@ -31,7 +31,8 @@ HEADERS  += hq.h \
     widgets/console/errormachine.h \
     lib/coreprocess.h \
     lib/corenexus.h \
-    widgets/console/messagebox.h
+    widgets/console/messagebox.h \
+    lib/commandStructures.h
 
 FORMS    += hq.ui \
     widgets/console/messagebox.ui

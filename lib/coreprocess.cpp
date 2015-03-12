@@ -20,7 +20,7 @@ CoreProcess::CoreProcess(QObject *parent) :
 void CoreProcess::processCommand(QString command)
 {
     QString result;
-    QString translation = nexus.translateCommand(command);
+    QString translation = nexus.retrieveCommand(command);
 
     // Make sure translation is defined
     if( translation != REF_UNDEFINED )
@@ -125,7 +125,7 @@ QString CoreProcess::nixInterface(QString command)
         proc->close();
     }
 
-    errM.messageBox("ls 'ing a directory other than current is not working");
+    errM.consoleOut("ls 'ing a directory other than current is not working");
     qDebug() << command;
 
     return response;

@@ -26,7 +26,6 @@ void CoreModule::humanInput(QString cmd)
 */
 void CoreModule::processReturn(QString res)
 {
-    errM.messageBox("\n\t [CoreModule processReturn slot]\n\n >>Change command input, and rewrite directory operations with QDir");
     emit responseReady(res);
 }
 
