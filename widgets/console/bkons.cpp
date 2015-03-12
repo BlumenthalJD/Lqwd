@@ -10,7 +10,7 @@
 Bkons::Bkons(QWidget *parent)
     : QPlainTextEdit(parent)
 {
-    errM.showMessage("Bkons Inititated");
+    errM.consoleOut("Bkons Inititated");
 
     lqwdText = "@lqwd>  ";
     arrowIndex = 0;

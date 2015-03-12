@@ -8,6 +8,7 @@
 #include <QStringList>
 
 #include "../widgets/console/defines.h"
+#include "../widgets/console/errormachine.h"
 
 // The map structure for commands and arguments
 struct cmap
@@ -33,6 +34,7 @@ public:
     QString translateCommand(QString cmd);
 
 private :
+    ErrorMachine errM;
     QList<_cmap> commandMap;
 
     // Explicitly undefined os arguments (indicated by ! in command_map.lqwd)

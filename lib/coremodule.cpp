@@ -3,7 +3,7 @@
 CoreModule::CoreModule(QObject *parent) :
     QObject(parent)
 {
-    errM.showMessage("Core Module Inititated");
+    errM.consoleOut("Core Module Inititated");
 
     // Load the UI settings
     settings.loadFile(":/config/coreModule/core_config.lqwd");

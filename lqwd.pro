@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     widgets/console/consolesettings.cpp \
     widgets/console/errormachine.cpp \
     lib/coreprocess.cpp \
-    lib/corenexus.cpp
+    lib/corenexus.cpp \
+    widgets/console/messagebox.cpp
 
 HEADERS  += hq.h \
     widgets/console/bkons.h \
@@ -29,9 +30,11 @@ HEADERS  += hq.h \
     widgets/console/defines.h \
     widgets/console/errormachine.h \
     lib/coreprocess.h \
-    lib/corenexus.h
+    lib/corenexus.h \
+    widgets/console/messagebox.h
 
-FORMS    += hq.ui
+FORMS    += hq.ui \
+    widgets/console/messagebox.ui
 
 RESOURCES += \
     config.qrc \

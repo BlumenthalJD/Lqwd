@@ -3,7 +3,7 @@
 CoreProcess::CoreProcess(QObject *parent) :
     QObject(parent)
 {
-    errM.showMessage("Core Process Initiated");
+    errM.consoleOut("Core Process Initiated");
 
     // Create the process, and setup error handling
     proc = new QProcess;
@@ -125,7 +125,7 @@ QString CoreProcess::nixInterface(QString command)
         proc->close();
     }
 
-    errM.showMessage("ls 'ing a directory other than current is not working");
+    errM.messageBox("ls 'ing a directory other than current is not working");
     qDebug() << command;
 
     return response;

@@ -28,7 +28,7 @@ void CoreNexus::loadCommandMap()
     }
     else
     {
-   //     errM.catchError(" Could not open resource file : command_map.lqwd ", -1);
+        errM.catchError(" Could not open resource file : command_map.lqwd ", -1);
     }
 }
 
@@ -101,7 +101,7 @@ void CoreNexus::insertIntoMap(QString cmd)
 QString CoreNexus::translateCommand(QString input)
 {
 
-    qDebug() << " CoreNexus Translating";
+    errM.consoleOut(" CoreNexus Translating");
     /*
         Filter the input to seperate out command and arguments
     */
@@ -242,8 +242,7 @@ QString CoreNexus::translateCommand(QString input)
                 if(jb != temp.count()-1)
                     translation += " ";
             }
-           // Return the translated command
-
+            // Return the translated command
             return translation;
        }
     }

@@ -5,6 +5,7 @@
 #include <QProcess>
 
 #include "defines.h"
+#include "messagebox.h"
 
 class ErrorMachine : public QObject
 {
@@ -16,12 +17,15 @@ signals:
 
 public slots:
 
-    void showMessage(QString);
+    void consoleOut(QString);
+
+    void messageBox(QString);
+
+    bool responseBox(QString);
 
     void catchError(QString, int arg=0);
 
     void handleProcessError(QProcess::ProcessError);
-
 };
 
 #endif // ERRORMACHINE_H
