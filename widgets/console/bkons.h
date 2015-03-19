@@ -21,11 +21,11 @@ public:
 
     void beginSession();
 
-    void puts(QString);
+    void puts(QString, bool);
 
 public slots:
 
-    void responseOut(QString);
+    void responseOut(QString, bool);
 
 protected:
     virtual void keyPressEvent(QKeyEvent *e);

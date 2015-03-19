@@ -18,7 +18,7 @@ public:
     CoreNexus();
     ~CoreNexus();
 
-    QString retrieveCommand(QString cmd);
+    QStringList retrieveCommand(QString cmd);
 
 private :
     ErrorMachine errM;

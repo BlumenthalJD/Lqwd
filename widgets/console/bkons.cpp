@@ -89,7 +89,7 @@ void Bkons::loadModule(ConsoleSettings * settings)
     if( 0 == currentModule )
     {
         connect(this, SIGNAL(dataReady(QString)), &coreModule, SLOT(humanInput(QString)));
-        connect(&coreModule, SIGNAL(responseReady(QString)), this, SLOT(responseOut(QString)));
+        connect(&coreModule, SIGNAL(responseReady(QString, bool)), this, SLOT(responseOut(QString, bool)));
     }
     else
         errM.catchError("Module could not be loaded", -1);
@@ -101,19 +101,18 @@ void Bkons::beginSession()
     setEnabled(true);
 }
 
-void Bkons::puts(QString data)
+void Bkons::puts(QString data, bool out)
 {
-    // Insert nl + data, then scroll screen to bottom
-    insertPlainText( "\n" + data);
+    (out) ? appendHtml( "<br>" + data) : insertPlainText("\n" + data);
+
     QScrollBar *bar = verticalScrollBar();
     bar->setValue(bar->maximum());
-
     getUserPrompt();
 }
 
-void Bkons::responseOut(QString response)
+void Bkons::responseOut(QString response, bool out)
 {
-    puts(response);
+    puts(response, out);
 }
 
 void Bkons::keyPressEvent(QKeyEvent *e)
@@ -301,9 +300,6 @@ void Bkons::addKeyToBuffer(QString key)
             storeCursorPos.movePosition(QTextCursor::Left, QTextCursor::MoveAnchor, arrowIndex);
             setTextCursor(storeCursorPos);
         }
-
-
-
     }
     else
     {

@@ -17,22 +17,25 @@ public:
     explicit CoreProcess(QObject *parent = 0);
 
 signals:
-    void processComplete(QString);
+    void processComplete(QString, bool);
 
 public slots:
     void processCommand(QString);
 
 private:
+
+    int outputType;
     QProcess * proc;
     CoreNexus nexus;
     ErrorMachine errM;
     QString currDir;
 
-    QString changeDirectory(QStringList);
-    void setWorkingDirectory(QString);
+    QString qtInterface(QStringList);
+    QString nixInterface(QStringList);
+    QString winInterface(QStringList);
 
-    QString nixInterface(QString);
-    QString winInterface(QString);
+    void setWorkingDirectory(QString);
+    QString changeDirectory(QStringList);
 };
 
 #endif // COREPROCESS_H

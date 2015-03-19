@@ -21,7 +21,7 @@ public:
 
 signals:
     // Core Process is done, send back response
-    void responseReady(QString);
+    void responseReady(QString, bool);
 
     // Send Data to core process
     void processCommand(QString);
@@ -31,7 +31,7 @@ public slots:
     void humanInput(QString);
 
     // Get response back from core process
-    void processReturn(QString);
+    void processReturn(QString, bool);
 
 private:
     // Error handler

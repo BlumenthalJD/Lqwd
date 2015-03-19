@@ -10,7 +10,7 @@ CoreModule::CoreModule(QObject *parent) :
 
     // Connect to core process
     connect(this, SIGNAL(processCommand(QString)), &cProc, SLOT(processCommand(QString)));
-    connect(&cProc, SIGNAL(processComplete(QString)), this, SLOT(processReturn(QString)));
+    connect(&cProc, SIGNAL(processComplete(QString, bool)), this, SLOT(processReturn(QString, bool)));
 }
 
 /*
@@ -24,9 +24,9 @@ void CoreModule::humanInput(QString cmd)
 /*
     Slot that recieves the response from the process
 */
-void CoreModule::processReturn(QString res)
+void CoreModule::processReturn(QString res, bool w)
 {
-    emit responseReady(res);
+    emit responseReady(res, w);
 }
 
 

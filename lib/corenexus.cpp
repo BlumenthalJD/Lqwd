@@ -183,9 +183,9 @@ QStringList CoreNexus::filterCommand(QString input)
     return cmd;
 }
 
-QString CoreNexus::retrieveCommand(QString input)
+QStringList CoreNexus::retrieveCommand(QString input)
 {
-    QString res = REF_UNDEFINED;
+    QStringList reply;
     QStringList inCmd = filterCommand(input);
 
     // First search through the command map
@@ -193,14 +193,21 @@ QString CoreNexus::retrieveCommand(QString input)
     {
         if( commandMap[i].cmd == inCmd[0] )
         {
-            res = commandMap[i].cmd;
+            // Indicate that the command is in command map
+            reply.append("C");
+
+            // Add the descriptor so we know what the command is suppose to do
+            reply.append(commandMap[i].sequenceName);
+
+            // Add the command
+            reply.append(commandMap[i].cmd);
+
+            // Add the other arguments
             for( int j = 1; j < inCmd.length(); j++ )
             {
-                res += inCmd[j];
-                if( j != inCmd.length()-1 )
-                    res += " ";
+                reply.append(inCmd[j]);
             }
-            return res;
+            return reply;
         }
     }
 
@@ -209,16 +216,20 @@ QString CoreNexus::retrieveCommand(QString input)
     {
         if( translationMap[i].input == inCmd[0] )
         {
-            res = translationMap[i].translation;
+            // Indicate that the command is in translation map
+            reply.append("T");
+
+            // Add the command
+            reply.append(translationMap[i].translation);
+
+            // Add the other arguments
             for( int j = 1; j < inCmd.length(); j++ )
             {
-                res += inCmd[j];
-                if( j != inCmd.length()-1 )
-                    res += " ";
+                reply.append(inCmd[j]);
             }
-            return res;
+            return reply;
         }
     }
-
-    return REF_UNDEFINED;
+    reply.append("?");
+    return reply;
 }
