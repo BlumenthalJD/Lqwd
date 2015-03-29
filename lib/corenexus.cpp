@@ -83,6 +83,7 @@ void CoreNexus::loadCommandMap()
                                    transCommand.append(cmdBlocks[OSINDEX]);
                                }
                                translationMap.append(_transCmd(transCommand[0], transCommand[1]));
+
                            }
 
                        }

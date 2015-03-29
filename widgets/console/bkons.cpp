@@ -103,7 +103,7 @@ void Bkons::beginSession()
 
 void Bkons::puts(QString data, bool out)
 {
-    (out) ? appendHtml( "<br>" + data) : insertPlainText("\n" + data);
+    (out) ? appendHtml( "<br>" + data + "</font> ") : insertPlainText("\n" + data);
 
     QScrollBar *bar = verticalScrollBar();
     bar->setValue(bar->maximum());

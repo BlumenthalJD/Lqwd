@@ -3,8 +3,11 @@
 
 
 #include <QDir>
+#include <QFile>
 #include <QObject>
 #include <QProcess>
+#include <QFileInfo>
+#include <QFileInfoList>
 
 #include "corenexus.h"
 #include "../widgets/console/defines.h"

@@ -134,7 +134,6 @@ QString CoreProcess::nixInterface(QStringList cmdChunks)
     response += res;
     proc->close();
 
-
     return response;
 }
 
@@ -154,33 +153,8 @@ void CoreProcess::setWorkingDirectory(QString dir)
 QString CoreProcess::changeDirectory(QStringList command)
 {
     command.removeAt(0);
-    // Handle moving up or down directories such as .. , and ../ as well as
-    // ../home ../../etc
-
-    QString response;
-
-    /*
-        // See if the command is a simple ..
-        if ( cmdChunks[2].length() == 2 && cmdChunks[2][cmdChunks[2].length()-1] == '.')
-        {
-            qDebug() << " Move one up";
-        }
-
-        for( int i = 0; i < cmdChunks[2].length(); i++ )
-        {
-            if( cmdChunks[2][i] == '.' && i == 0)
-            {
-
-            }
-        }
-
-
-*/
-
-  // See if new dir is ../ , if so generate the QDir path
-    errM.catchError(" coreMod doCommand -> ONLY SUPPORTS ../ ATM , FIND WAY TO ../../../ n ");
     QString newDir = "";
-    if( command[1] == "../" )
+    if( command[1] == ".." )
     {
         QDir curr = QDir::current();
         curr.cdUp();
@@ -188,6 +162,15 @@ QString CoreProcess::changeDirectory(QStringList command)
     }
     else
         newDir = command[1];
+
+    // Remove " in "path name"
+    QString temp = "";
+    foreach(QString ch, newDir)
+    {
+        if(ch != QString('"'))
+            temp += ch;
+    }
+    newDir = temp;
 
     // If the folder exists, move to it
     if( QDir(newDir).exists() )
@@ -197,7 +180,6 @@ QString CoreProcess::changeDirectory(QStringList command)
     }
     else
         return ("[" + command[1] + "] is not a folder.");
-
 
     return "There was an error changing directories ";
 }
