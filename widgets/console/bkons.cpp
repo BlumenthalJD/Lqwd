@@ -15,17 +15,17 @@ Bkons::Bkons(QWidget *parent)
     lqwdText = "@lqwd>  ";
     arrowIndex = 0;
 
-
     // In case module doesn't provide a setting - moduleId must be given.
     defaultSettings.loadFile(":/config/bkons/bkons_config.lqwd");
 
     // Initialize input buffer, history index, and history size limit
     buffer = "";
 
-    /*
-            Load the module
-    */
+    // Load default module
     loadModule(&coreModule.settings);
+
+    // Get dir information
+    updateAutoComplete();
 }
 
 void Bkons::loadModule(ConsoleSettings * settings)
@@ -137,8 +137,9 @@ void Bkons::clearConsole()
 void Bkons::updateAutoComplete()
 {
     QDir cDir(coreModule.getCWD());
+    autoComplete.clear();
     autoComplete = cDir.entryList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs);
-    qDebug() << autoComplete;
+    autoComplete.append(cDir.entryList(QDir::NoDotAndDotDot | QDir::Files));
 }
 
 void Bkons::keyPressEvent(QKeyEvent *e)
@@ -271,6 +272,85 @@ void Bkons::keyPressEvent(QKeyEvent *e)
             buffer = "";
             arrowIndex = 0;
             hIndex = history.length()-1;
+        }
+        break;
+    }
+    case Qt::Key_Tab:
+    {
+        // Extract which part of the buffer the user is typing in,
+        // Example : [mv dolan "Donald Du] -> ["Donald Du]
+
+        bool inQ = false;
+        QString temp = "";
+        QString currEntry;
+        QStringList currCmds;
+        bool replaceQ = false;
+        foreach(QString ch, buffer)
+        {
+            // Toggle if within "
+            if(ch == QString('"'))
+            {
+                replaceQ = true;
+                (inQ) ? inQ = false : inQ = true;
+            }
+
+            // If space is not within "'s add to commands
+            if(!inQ && ch == " ")
+            {
+                currCmds.append(temp);
+                temp = "";
+            }
+            else
+                temp += ch;
+        }
+        currEntry = temp;
+
+        // Cycle through directories and documents find something
+        // with the currEntry as a substring, if found insert into console
+        bool control = true;
+        QString newBuffer = "";
+
+        // Remove " for matching
+        currEntry.replace('"', "");
+        foreach(QString item, autoComplete)
+        {
+            // Check substring, removing " for matching - Control ensures only 1 match
+            if( control && item.split(" ")[0].contains(QRegExp(("^[%s]", currEntry))))
+            {
+                control = false;
+
+                // If found, rebuild the buffer
+                foreach(QString cmd, currCmds)
+                    newBuffer += (cmd + " ");
+
+                // Replace " if it existed on the currEntry, or if " should exist
+                if(replaceQ || item.contains(" "))
+                {
+                    newBuffer += QString('"');
+                    newBuffer.append(item);
+                    newBuffer += QString('"');
+                }
+                else
+                {
+                    newBuffer.append(item);
+                }
+            }
+        }
+
+        // If newBuffer was built, match was found so update console
+        if(newBuffer != "")
+        {
+            buffer = newBuffer;
+            setFocus();
+            QTextCursor storeCursorPos = textCursor();
+            moveCursor(QTextCursor::End, QTextCursor::MoveAnchor);
+            moveCursor(QTextCursor::StartOfLine, QTextCursor::MoveAnchor);
+            moveCursor(QTextCursor::End, QTextCursor::KeepAnchor);
+            textCursor().removeSelectedText();
+            textCursor().deletePreviousChar();
+            setTextCursor(storeCursorPos);
+            getUserPrompt();
+            insertPlainText(buffer);
         }
         break;
     }
