@@ -19,6 +19,8 @@ public:
     int moduleId;
     ConsoleSettings settings;
 
+    QString getCWD();
+
 signals:
     // Core Process is done, send back response
     void responseReady(QString, bool);

@@ -25,7 +25,11 @@ public:
 
 public slots:
 
-    void responseOut(QString, bool);
+    // Outputs to screen
+    void processResponse(QString, bool);
+
+    // Clears the screen
+    void clearConsole();
 
 protected:
     virtual void keyPressEvent(QKeyEvent *e);
@@ -58,6 +62,8 @@ private:
     // Handles the users input until they hit return/enter
     QString buffer;
 
+    QStringList autoComplete;
+
     //The current index of the cursor relative to buffer
     int bufferCursorIndex;
 
@@ -80,6 +86,9 @@ private:
 
     // Call to print input prompt (Dispays activity)
     void getUserPrompt();
+
+    // Update the TAB option for the user on directory change
+    void updateAutoComplete();
 
 };
 

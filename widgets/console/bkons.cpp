@@ -89,7 +89,7 @@ void Bkons::loadModule(ConsoleSettings * settings)
     if( 0 == currentModule )
     {
         connect(this, SIGNAL(dataReady(QString)), &coreModule, SLOT(humanInput(QString)));
-        connect(&coreModule, SIGNAL(responseReady(QString, bool)), this, SLOT(responseOut(QString, bool)));
+        connect(&coreModule, SIGNAL(responseReady(QString, bool)), this, SLOT(processResponse(QString, bool)));
     }
     else
         errM.catchError("Module could not be loaded", -1);
@@ -110,9 +110,35 @@ void Bkons::puts(QString data, bool out)
     getUserPrompt();
 }
 
-void Bkons::responseOut(QString response, bool out)
+void Bkons::processResponse(QString response, bool out)
 {
-    puts(response, out);
+    if(response == "clear_console")
+    {
+        clearConsole();
+    }
+    else if( response == "change_directory")
+    {
+        puts("Directory Changed", 1);
+        updateAutoComplete();
+    }
+    else
+    {
+        puts(response, out);
+    }
+
+}
+
+void Bkons::clearConsole()
+{
+    setPlainText("");
+    getUserPrompt();
+}
+
+void Bkons::updateAutoComplete()
+{
+    QDir cDir(coreModule.getCWD());
+    autoComplete = cDir.entryList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs);
+    qDebug() << autoComplete;
 }
 
 void Bkons::keyPressEvent(QKeyEvent *e)
@@ -329,3 +355,4 @@ void Bkons::getUserPrompt()
                + lqwdText
                + "</font>");
 }
+

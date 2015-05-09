@@ -17,6 +17,11 @@ CoreProcess::CoreProcess(QObject *parent) :
         errM.catchError("Unknown OS", -1);
 }
 
+QString CoreProcess::getCWD()
+{
+    return currDir;
+}
+
 void CoreProcess::processCommand(QString command)
 {
     // Handles if html(1) or plain text(!1) output,
@@ -35,20 +40,7 @@ void CoreProcess::processCommand(QString command)
         else if ( translation[0] == "T" )
         {
             translation.removeAt(0);
-            switch(OSINDEX)
-            {
-            case -1:
-                errM.catchError("Core Process - Unknown OS", -1);
-                break;
-            case 1:
-                // Run command via windows interface
-                //result = winInterface(translation[1]);
-                break;
-            case 2:
-                // Run command via nix Interface
-                result = nixInterface(translation);
-                break;
-            }
+            result = systemInterface(translation);
         }
         emit processComplete(result, outputType);
     }
@@ -72,24 +64,47 @@ QString CoreProcess::qtInterface(QStringList cmdChunks)
         unsigned i = 1;
         QString temp = "";
         QDir recoredDir(currDir);
-        temp += "<font color=red>[Folders]</font><br><b>";
+        QStringList directoryList = recoredDir.entryList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs);
+        QStringList documentList = recoredDir.entryList(QDir::NoDotAndDotDot | QDir::Files);
 
-        // Get and display folders
-        foreach(QString el, recoredDir.entryList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs))
-            ( i++ % 3 == 0 ) ? temp += (" " + el + "<br>") : temp += ( " " + el + "<font color=red>,</font>");\
+        // Get and display directories
+        temp += "<font color=red>[Directories]</font><br><b>";
 
-        temp += "</b><br><font color=red>[Files]</font><br><i>";
+        foreach(QString el, directoryList)
+            if( i++ % 3 == 0 )
+                temp += (" " + el + "<br>");
+            else
+            {
+                temp += ( " " + el);
+
+                // If its not the last entry, add a red comma
+                if( !((directoryList.indexOf(el)) == (directoryList.length()-1)))
+                    temp += ("<font color=red>,</font>");
+            }
+
+        // Get and display documents
+        temp += "</b><br><br><font color=red>[Documents]</font><br>";
         i = 1;
 
-        // Get and display files
-        foreach(QString el, recoredDir.entryList(QDir::NoDotAndDotDot | QDir::Files))
-            ( i++ % 3 == 0 ) ? temp += (" " + el + "<br>") : temp += ( " " + el + "<font color=red>,</font>");\
+        // Get and display documents
+        foreach(QString el, documentList)
+            if ( i++ % 3 == 0 )
+                temp += (" " + el + "<br>");
+            else
+            {
+                temp += ( " " + el);
 
-        temp += "</i>";
+                // If its not the last entry, add a red comma
+                if( !((documentList.indexOf(el)) == (documentList.length()-1)))
+                    temp += ("<font color=red>,</font>");
+            }
+
         return temp;
     }
     else if( "change_directory" == cmdChunks[0] )
     {
+
+        qDebug() << cmdChunks;
         if(cmdChunks.length() <= 2)
         {
             setWorkingDirectory(QDir::homePath());
@@ -100,23 +115,27 @@ QString CoreProcess::qtInterface(QStringList cmdChunks)
     }
     else if( "remove_document" == cmdChunks[0] )
     {
-
+        return "[coreProcess] Directory removal not programmed";
     }
     else if( "clear_console" == cmdChunks[0] )
     {
-
+        return cmdChunks[0];
+    }
+    else if("create_directory" == cmdChunks[0] )
+    {
+        return "[coreProcess] Directory creation not programmed";
+    }
+    else if("load_module" == cmdChunks[0] )
+    {
+        return "[coreProcess] Module loading not programmed";
     }
     else
     {
         return "Unhandled command scope.";
     }
-
-
-    qDebug() << "QT INTERFACE" << cmdChunks;
-    return "QTINTERFACE";
 }
 
-QString CoreProcess::nixInterface(QStringList cmdChunks)
+QString CoreProcess::systemInterface(QStringList cmdChunks)
 {
     QString response, command;
     for(int i = 0; i < cmdChunks.length(); i++)
@@ -126,7 +145,6 @@ QString CoreProcess::nixInterface(QStringList cmdChunks)
             command += " ";
     }
 
-    response = " LINUX COMMAND \n";
     proc->start(command);
     proc->waitForFinished(-1);
     QByteArray result = proc->readAllStandardOutput();
@@ -136,13 +154,6 @@ QString CoreProcess::nixInterface(QStringList cmdChunks)
 
     return response;
 }
-
-QString CoreProcess::winInterface(QStringList)
-{
-    errM.catchError("Windows commands not yet programmed !", -1);
-    return " WINDOWS COMMAND";
-}
-
 
 void CoreProcess::setWorkingDirectory(QString dir)
 {
@@ -176,7 +187,7 @@ QString CoreProcess::changeDirectory(QStringList command)
     if( QDir(newDir).exists() )
     {
         setWorkingDirectory(newDir);
-        return "Directory Changed, now in [" + newDir +"]";
+        return "change_directory";
     }
     else
         return ("[" + command[1] + "] is not a folder.");

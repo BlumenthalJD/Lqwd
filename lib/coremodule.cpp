@@ -14,6 +14,14 @@ CoreModule::CoreModule(QObject *parent) :
 }
 
 /*
+    Return the working directory
+ */
+QString CoreModule::getCWD()
+{
+    return cProc.getCWD();
+}
+
+/*
     Slot that recieves the command from the user
 */
 void CoreModule::humanInput(QString cmd)

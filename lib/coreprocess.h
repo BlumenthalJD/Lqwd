@@ -18,6 +18,7 @@ class CoreProcess : public QObject
     Q_OBJECT
 public:
     explicit CoreProcess(QObject *parent = 0);
+    QString getCWD();
 
 signals:
     void processComplete(QString, bool);
@@ -34,6 +35,7 @@ private:
     QString currDir;
 
     QString qtInterface(QStringList);
+    QString systemInterface(QStringList);
     QString nixInterface(QStringList);
     QString winInterface(QStringList);
 

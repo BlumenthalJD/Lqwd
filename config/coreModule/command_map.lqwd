@@ -17,6 +17,11 @@ change_directory
     command : cd : [Change to a directory]
 >
 
+create_directory
+<
+    command : mkdir : [Create a new directory]
+>
+
 remove_document
 <
     command : rm : [Remove]
@@ -28,6 +33,11 @@ remove_document
 clear_console
 <
     command : c : [Clear the console]
+>
+
+load_module
+<
+    command : mload : [Load a different module]
 >
 
 # ------------------------------------------------------------------------------
