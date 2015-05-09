@@ -103,8 +103,6 @@ QString CoreProcess::qtInterface(QStringList cmdChunks)
     }
     else if( "change_directory" == cmdChunks[0] )
     {
-
-        qDebug() << cmdChunks;
         if(cmdChunks.length() <= 2)
         {
             setWorkingDirectory(QDir::homePath());
@@ -115,7 +113,24 @@ QString CoreProcess::qtInterface(QStringList cmdChunks)
     }
     else if( "remove_document" == cmdChunks[0] )
     {
-        return "[coreProcess] Directory removal not programmed";
+        if(cmdChunks.length() < 3)
+            return "> No name given for directory removal";
+        else
+        {
+            if(QDir(cmdChunks[2]).exists())
+            {
+                QDir().remove(cmdChunks[2]);
+                if(!QDir(cmdChunks[2]).exists())
+                    return "Directory removed";
+                else
+                    return "Error removing directory";
+            }
+            else
+            {
+                return "Directory does not exist";
+            }
+
+        }
     }
     else if( "clear_console" == cmdChunks[0] )
     {
@@ -123,11 +138,36 @@ QString CoreProcess::qtInterface(QStringList cmdChunks)
     }
     else if("create_directory" == cmdChunks[0] )
     {
-        return "[coreProcess] Directory creation not programmed";
+        if(cmdChunks.length() < 3)
+            return "> No name given for new directory";
+        else
+        {
+            qDebug() << QDir::currentPath();
+
+            if(QDir(cmdChunks[2]).exists())
+                return "Directory Exists";
+            else
+            {
+                QDir().mkdir(cmdChunks[2]);
+                if(QDir(cmdChunks[2]).exists())
+                    return "Directory Created";
+                else
+                    return "Error creating folder";
+            }
+            return "Error creating folder";
+        }
     }
     else if("load_module" == cmdChunks[0] )
     {
         return "[coreProcess] Module loading not programmed";
+    }
+    else if("save_output" == cmdChunks[0])
+    {
+        return "[coreProcess] Saving output not programmed";
+    }
+    else if("request_help" == cmdChunks[0])
+    {
+        return "[coreProcess] Help not programmed";
     }
     else
     {
@@ -187,7 +227,7 @@ QString CoreProcess::changeDirectory(QStringList command)
     if( QDir(newDir).exists() )
     {
         setWorkingDirectory(newDir);
-        return "change_directory";
+        return "Directory Changed";
     }
     else
         return ("[" + command[1] + "] is not a folder.");

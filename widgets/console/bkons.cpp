@@ -116,13 +116,9 @@ void Bkons::processResponse(QString response, bool out)
     {
         clearConsole();
     }
-    else if( response == "change_directory")
-    {
-        puts("Directory Changed", 1);
-        updateAutoComplete();
-    }
     else
     {
+        updateAutoComplete();
         puts(response, out);
     }
 

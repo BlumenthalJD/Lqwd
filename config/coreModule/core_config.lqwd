@@ -6,12 +6,12 @@
 
 font:Courier
 fontSize:13
-fontColor:0,0,0
-backgroundColor:255,255,255
+fontColor:98,201,147
+backgroundColor:27,28,41
 activityName:core
 
 # Promt supports html <font> colors
-promptColor:blue
+promptColor:#E7E6A1
 
 # 	Input buffer settings
 #

@@ -7,6 +7,11 @@
 #       second segment contains os-specific system commands
 #
 
+request_help
+<
+    command : help : [Give command list]
+>
+
 list_directory
 <
     command : l : [List the given directory]
@@ -33,6 +38,11 @@ remove_document
 clear_console
 <
     command : c : [Clear the console]
+>
+
+save_output
+<
+    command : cout : [Save command output]
 >
 
 load_module

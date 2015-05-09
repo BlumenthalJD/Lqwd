@@ -49,7 +49,6 @@ void CoreNexus::loadCommandMap()
                            {
                                command = ln.split(DELIMITER_BLOCK)[1].trimmed();
                                desc = ln.split(DELIMITER_BLOCK)[2].trimmed();
-                               qDebug() << command;
                            }
                            else if( ln.split(DELIMITER_BLOCK)[0].trimmed() == "args" )
                            {
