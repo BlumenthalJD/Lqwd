@@ -60,10 +60,30 @@ QString CoreProcess::qtInterface(QStringList cmdChunks)
 {
     if( "list_directory" == cmdChunks[0] )
     {
+        if (cmdChunks.length() > 3)
+            return "Invalid input for listing directory.";
+
         outputType = 1;
         unsigned i = 1;
         QString temp = "";
-        QDir recoredDir(currDir);
+        QDir recoredDir;
+
+        // Test to see if listing the current, or specified directory
+        if( cmdChunks.length() == 3 )
+        {
+            qDebug() << "User wants to list a different directory than their current";
+
+            QFile file(cmdChunks[2]);
+            if (!file.exists())
+                return sendFileNotExist(cmdChunks[2]);
+
+            recoredDir.setPath(cmdChunks[2]);
+        }
+        else
+        {
+            qDebug() << "List the current directory";
+            recoredDir = QDir::currentPath();
+        }
         QStringList directoryList = recoredDir.entryList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs);
         QStringList documentList = recoredDir.entryList(QDir::NoDotAndDotDot | QDir::Files);
 
@@ -127,7 +147,7 @@ QString CoreProcess::qtInterface(QStringList cmdChunks)
             }
             else
             {
-                return "Directory does not exist";
+                return sendFileNotExist(cmdChunks[2]);
             }
 
         }
@@ -135,6 +155,14 @@ QString CoreProcess::qtInterface(QStringList cmdChunks)
     else if( "clear_console" == cmdChunks[0] )
     {
         return cmdChunks[0];
+    }
+    else if( "working_dir" == cmdChunks[0] )
+    {
+        outputType = 2;
+        QString temp = "<font color=red>";
+        temp += getCWD();
+        temp += "</font>";
+        return temp;
     }
     else if("create_directory" == cmdChunks[0] )
     {
@@ -191,18 +219,20 @@ QString CoreProcess::systemInterface(QStringList cmdChunks)
     QString res(result);
     response += res;
     proc->close();
-
     return response;
 }
 
 void CoreProcess::setWorkingDirectory(QString dir)
 {
-    proc->setWorkingDirectory(dir);
     QDir::setCurrent(dir);
+    proc->setWorkingDirectory(dir);
+    currDir = proc->workingDirectory();
 }
 
 QString CoreProcess::changeDirectory(QStringList command)
 {
+    qDebug() << " IN coreProcess->changeDirectory() \n" << command;
+
     command.removeAt(0);
     QString newDir = "";
     if( command[1] == ".." )
@@ -230,7 +260,12 @@ QString CoreProcess::changeDirectory(QStringList command)
         return "Directory Changed";
     }
     else
-        return ("[" + command[1] + "] is not a folder.");
+        return sendFileNotExist(command[1]);
 
     return "There was an error changing directories ";
+}
+
+QString CoreProcess::sendFileNotExist(QString fileName)
+{
+    return QString("[ %1 ] Does not exist.").arg(fileName);
 }

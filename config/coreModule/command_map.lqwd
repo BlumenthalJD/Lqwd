@@ -50,6 +50,11 @@ load_module
     command : mload : [Load a different module]
 >
 
+working_dir
+<
+    command : cwd : [Show current working directory]
+>
+
 # ------------------------------------------------------------------------------
 #	First field is the command you want to use in the terminal,
 #	the second is what that will map to on windows, and the third is for nix

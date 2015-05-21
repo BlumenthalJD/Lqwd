@@ -41,6 +41,8 @@ private:
 
     void setWorkingDirectory(QString);
     QString changeDirectory(QStringList);
+
+    QString sendFileNotExist(QString);
 };
 
 #endif // COREPROCESS_H
